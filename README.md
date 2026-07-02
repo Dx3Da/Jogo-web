@@ -5,6 +5,40 @@ Desenvolvido em **Python 3 + SQLite3** (backend) e **HTML5 Canvas** (frontend).
 
 ---
 
+## 📖 Sobre o Projeto
+
+Projeto desenvolvido como parte de um trabalho acadêmico da faculdade, com foco na criação de uma aplicação web interativa utilizando HTML, CSS, JavaScript e Python.
+
+> ⚠️ Este projeto foi desenvolvido em um curto período de tempo para atender aos requisitos da disciplina. O foco principal foi entregar um produto funcional, priorizando a implementação das funcionalidades em vez da arquitetura do código.
+
+### 🤖 Desenvolvimento com IA
+
+Durante o desenvolvimento foram aplicados conceitos como:
+- Manipulação do DOM
+- Eventos JavaScript
+- Atualização dinâmica da interface
+- Organização da lógica do jogo
+- Integração com Python para persistência de dados
+- Estruturação de páginas utilizando HTML e CSS
+
+**Processo de Desenvolvimento com IA:**
+
+1. **Fase Inicial (Claude):** Estabelecimento da arquitetura base do projeto e estrutura fundamental do backend em Python, criação da integração com SQLite3 e geração inicial do frontend com Canvas.
+
+2. **Fase de Aprimoramento (Gemini):** Otimizações iterativas, evolução das mecânicas de jogo, melhorias de performance e refinamento das funcionalidades implementadas.
+
+3. **Execução Manual:** Cada sugestão gerada foi testada, compreendida, adaptada e integrada conforme as necessidades específicas da aplicação. Todo o ciclo de validação, correção de bugs e evolução das features foi realizado manualmente.
+
+**Filosofia:** IA foi utilizada como ferramenta de produtividade para acelerar o desenvolvimento sem sacrificar a qualidade e compreensão do código. O foco foi em entregar um produto funcional e bem estruturado dentro das limitações de tempo do projeto acadêmico.
+
+**Tecnologias Utilizadas:**
+- HTML5
+- CSS3
+- JavaScript
+- Python
+
+---
+
 ## 🚀 Como Jogar
 
 ### Requisitos
@@ -31,6 +65,7 @@ Abra o navegador em: **http://localhost:8765**
 | Zoom | Scroll do mouse |
 
 Nota sobre o Design: O jogo utiliza uma interface "Mouse-Only". Não são necessários atalhos de teclado. Basta selecionar a ação no painel de ferramentas e clicar no elemento do mapa com o qual deseja interagir. O jogo processa automaticamente a lógica e compatibilidade da ferramenta com o terreno.
+
 ---
 
 ## 🛠️ Ferramentas
@@ -128,3 +163,46 @@ SQLite3 salvo em `data/jogo.db`. Tabelas:
 3. Construa um Robô Coletor o mais cedo possível
 4. Durma todo dia para os robôs trabalharem e as plantas crescerem
 5. Vá ao Ferro-Velho para conseguir sucata rara (necessária para o Robô Minerador)
+
+---
+
+## 🎯 Objetivos de Aprendizado
+
+Este projeto contribuiu para o aprendizado de:
+
+- Estruturação de aplicações web
+- Organização da lógica utilizando JavaScript
+- Comunicação entre Front-end e Back-end
+- Resolução de problemas
+- Integração de diferentes tecnologias
+- Utilização de IA como apoio ao desenvolvimento
+
+---
+
+## 🔮 Melhorias Futuras
+
+Algumas melhorias que podem ser implementadas futuramente:
+
+- Refatoração completa da estrutura do código
+- Separação da lógica em módulos
+- Melhor organização dos arquivos
+- Interface mais responsiva
+- Sistema de salvamento mais robusto
+- Melhor desempenho geral
+- Documentação técnica
+
+---
+
+## 📚 Status do Projeto
+
+🟡 Finalizado como projeto acadêmico.
+
+O projeto permanece disponível neste repositório como registro da evolução dos meus estudos e poderá receber melhorias futuramente.
+
+---
+
+## 👨‍💻 Autor
+
+Luiz Fernando
+
+Desenvolvido como parte da minha jornada de aprendizado em Desenvolvimento Full Stack.
