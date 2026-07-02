@@ -1,0 +1,1777 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>EcoSys - O Jogo</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Orbitron:wght@400;700;900&family=VT323&display=swap');
+
+    :root {
+      --bg: #0a0a08;
+      --panel: #111510;
+      --panel2: #1a1f14;
+      --border: #3a4a2a;
+      --green: #5aff4a;
+      --green2: #2a8a1a;
+      --rust: #c86020;
+      --rust2: #8a3a10;
+      --yellow: #d4b800;
+      --blue: #48aacc;
+      --red: #cc3030;
+      --white: #d8e0c8;
+      --gray: #6a7860;
+      --tile: 40px;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      background: var(--bg);
+      color: var(--white);
+      font-family: 'Share Tech Mono', monospace;
+      display: flex;
+      flex-direction: column;
+      height: 100vh;
+      overflow: hidden;
+      user-select: none;
+    }
+
+    /* HEADER */
+    #header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 6px 16px;
+      background: var(--panel);
+      border-bottom: 2px solid var(--border);
+      flex-shrink: 0;
+    }
+
+    #titulo {
+      font-family: 'Orbitron', sans-serif;
+      font-size: 18px;
+      font-weight: 900;
+      color: var(--rust);
+      text-shadow: 0 0 10px var(--rust2);
+      letter-spacing: 3px;
+    }
+
+    #titulo span {
+      color: var(--green);
+    }
+
+    #status-bar {
+      display: flex;
+      gap: 20px;
+      align-items: center;
+      font-size: 12px;
+    }
+
+    .stat {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .stat-icon {
+      font-size: 16px;
+    }
+
+    .bar-wrap {
+      width: 80px;
+      height: 10px;
+      background: #222;
+      border-radius: 5px;
+      overflow: hidden;
+      border: 1px solid var(--border);
+    }
+
+    .bar-fill {
+      height: 100%;
+      border-radius: 5px;
+      transition: width 0.3s;
+    }
+
+    .bar-energia {
+      background: linear-gradient(90deg, var(--yellow), #ffdd00);
+    }
+
+    .bar-xp {
+      background: linear-gradient(90deg, var(--blue), #88ddff);
+    }
+
+    /* MAIN */
+    #main {
+      display: flex;
+      flex: 1;
+      overflow: hidden;
+    }
+
+    /* LEFT PANEL */
+    #left-panel {
+      width: 180px;
+      background: var(--panel);
+      border-right: 2px solid var(--border);
+      display: flex;
+      flex-direction: column;
+      flex-shrink: 0;
+    }
+
+    #inventario-lista {
+      max-height: 150px;
+      overflow-y: auto;
+      padding-right: 4px;
+    }
+
+    .panel-section {
+      padding: 8px;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .panel-title {
+      font-family: 'Orbitron', sans-serif;
+      font-size: 9px;
+      color: var(--rust);
+      letter-spacing: 2px;
+      margin-bottom: 6px;
+      text-transform: uppercase;
+    }
+
+    .area-btn {
+      width: 100%;
+      background: var(--panel2);
+      border: 1px solid var(--border);
+      color: var(--white);
+      padding: 5px 8px;
+      margin-bottom: 3px;
+      cursor: pointer;
+      font-family: 'Share Tech Mono', monospace;
+      font-size: 11px;
+      text-align: left;
+      transition: all 0.15s;
+      border-radius: 3px;
+    }
+
+    .area-btn:hover {
+      border-color: var(--green);
+      color: var(--green);
+    }
+
+    .area-btn.active {
+      border-color: var(--green);
+      background: #1a2f1a;
+      color: var(--green);
+    }
+
+    .tool-btn {
+      width: 100%;
+      background: var(--panel2);
+      border: 1px solid var(--border);
+      color: var(--white);
+      padding: 5px 8px;
+      margin-bottom: 3px;
+      cursor: pointer;
+      font-family: 'Share Tech Mono', monospace;
+      font-size: 11px;
+      text-align: left;
+      transition: all 0.15s;
+      border-radius: 3px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .tool-btn:hover {
+      border-color: var(--yellow);
+      color: var(--yellow);
+    }
+
+    .tool-btn.selected {
+      border-color: var(--yellow);
+      background: #2a2a08;
+      color: var(--yellow);
+    }
+
+    .inv-item {
+      display: flex;
+      justify-content: space-between;
+      font-size: 10px;
+      padding: 2px 0;
+      border-bottom: 1px solid #1a2010;
+      color: var(--gray);
+    }
+
+    .inv-item .qtd {
+      color: var(--green);
+    }
+
+    /* GAME AREA */
+    #game-area {
+      flex: 1;
+      position: relative;
+      overflow: hidden;
+      background: #050806;
+    }
+
+    #game-canvas {
+      display: block;
+      cursor: crosshair;
+    }
+
+    /* RIGHT PANEL */
+    #right-panel {
+      width: 200px;
+      background: var(--panel);
+      border-left: 2px solid var(--border);
+      display: flex;
+      flex-direction: column;
+      flex-shrink: 0;
+    }
+
+    .robo-card {
+      background: var(--panel2);
+      border: 1px solid var(--border);
+      border-radius: 4px;
+      padding: 6px;
+      margin-bottom: 4px;
+      font-size: 10px;
+    }
+
+    .robo-nome {
+      color: var(--blue);
+      font-size: 11px;
+      margin-bottom: 2px;
+    }
+
+    .robo-tipo {
+      color: var(--gray);
+    }
+
+    /* BOTTOM LOG */
+    #log-area {
+      height: 80px;
+      background: #080c06;
+      border-top: 2px solid var(--border);
+      overflow-y: auto;
+      padding: 6px 10px;
+      flex-shrink: 0;
+      font-size: 11px;
+      font-family: 'VT323', monospace;
+      font-size: 14px;
+    }
+
+    .log-msg {
+      color: var(--green);
+      line-height: 1.3;
+      padding: 1px 0;
+      border-bottom: 1px solid #111;
+    }
+
+    .log-msg.erro {
+      color: var(--red);
+    }
+
+    .log-msg.info {
+      color: var(--blue);
+    }
+
+    .log-msg.xp {
+      color: var(--yellow);
+    }
+
+    /* MODAL */
+    #modal-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.85);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 100;
+    }
+
+    #modal {
+      background: var(--panel);
+      border: 2px solid var(--rust);
+      border-radius: 8px;
+      padding: 24px;
+      min-width: 360px;
+      max-width: 480px;
+      text-align: center;
+    }
+
+    #modal h2 {
+      font-family: 'Orbitron', sans-serif;
+      color: var(--rust);
+      font-size: 24px;
+      margin-bottom: 8px;
+      text-shadow: 0 0 15px var(--rust2);
+    }
+
+    #modal p {
+      color: var(--gray);
+      margin-bottom: 16px;
+      font-size: 12px;
+      line-height: 1.6;
+    }
+
+    #modal input {
+      background: var(--panel2);
+      border: 2px solid var(--border);
+      color: var(--white);
+      padding: 10px 14px;
+      font-family: 'Share Tech Mono', monospace;
+      font-size: 14px;
+      width: 100%;
+      margin-bottom: 12px;
+      border-radius: 4px;
+      outline: none;
+    }
+
+    #modal input:focus {
+      border-color: var(--green);
+    }
+
+    .btn-primary {
+      background: var(--rust2);
+      border: 2px solid var(--rust);
+      color: var(--white);
+      padding: 10px 24px;
+      font-family: 'Orbitron', sans_serif;
+      font-size: 12px;
+      cursor: pointer;
+      border-radius: 4px;
+      letter-spacing: 1px;
+      transition: all 0.15s;
+      width: 100%;
+    }
+
+    .btn-primary:hover {
+      background: var(--rust);
+    }
+
+    /* CRAFT MODAL */
+    #craft-modal {
+      position: absolute;
+      top: 10px;
+      right: 210px;
+      background: var(--panel);
+      border: 2px solid var(--border);
+      border-radius: 6px;
+      padding: 12px;
+      width: 200px;
+      z-index: 50;
+      display: none;
+    }
+
+    #craft-modal h3 {
+      font-family: 'Orbitron', sans-serif;
+      font-size: 10px;
+      color: var(--rust);
+      margin-bottom: 8px;
+      letter-spacing: 1px;
+    }
+
+    .craft-recipe {
+      background: var(--panel2);
+      border: 1px solid var(--border);
+      border-radius: 3px;
+      padding: 6px;
+      margin-bottom: 4px;
+      cursor: pointer;
+      transition: all 0.15s;
+    }
+
+    .craft-recipe:hover {
+      border-color: var(--green);
+    }
+
+    .craft-recipe-nome {
+      font-size: 11px;
+      color: var(--blue);
+      margin-bottom: 2px;
+    }
+
+    .craft-recipe-itens {
+      font-size: 9px;
+      color: var(--gray);
+    }
+
+    /* TOOLTIP */
+    #tooltip {
+      position: absolute;
+      background: rgba(10, 12, 8, 0.95);
+      border: 1px solid var(--border);
+      padding: 4px 8px;
+      font-size: 10px;
+      border-radius: 3px;
+      pointer-events: none;
+      z-index: 200;
+      display: none;
+      color: var(--white);
+    }
+
+    /* DAY ADVANCE */
+    #btn-dormir {
+      background: var(--panel2);
+      border: 1px solid var(--border);
+      color: var(--gray);
+      padding: 5px 8px;
+      cursor: pointer;
+      font-family: 'Share Tech Mono', monospace;
+      font-size: 11px;
+      width: 100%;
+      border-radius: 3px;
+      margin-top: 4px;
+      transition: all 0.15s;
+    }
+
+    #btn-dormir:hover {
+      border-color: var(--blue);
+      color: var(--blue);
+    }
+
+    #semente-select {
+      width: 100%;
+      background: var(--panel2);
+      border: 1px solid var(--border);
+      color: var(--white);
+      padding: 4px;
+      font-family: 'Share Tech Mono', monospace;
+      font-size: 10px;
+      border-radius: 3px;
+      margin-top: 4px;
+      outline: none;
+    }
+
+    ::-webkit-scrollbar {
+      width: 4px;
+    }
+
+    ::-webkit-scrollbar-track {
+      background: var(--panel);
+    }
+
+    ::-webkit-scrollbar-thumb {
+      background: var(--border);
+      border-radius: 2px;
+    }
+  </style>
+</head>
+
+
+
+<body>
+
+  <div id="menu-inicial"
+    style="position:fixed; top:0; left:0; width:100%; height:100%; background:#000; z-index:999; display:flex; flex-direction:column; align-items:center; justify-content:center;">
+    <h1>ECOSYS - Gerenciador de Automação</h1>
+    <p>Controles: Mouse (Clique para interagir, Botão Direito para mover)</p>
+    <p>Objetivo: Quebre sucata, construa robôs e cultive plantas para sobreviver neste mundo pós-apocalíptico!</p>
+    <p>O objetivo é acumular 10.000 moedas para salvar o Lixão!
+      Derrota é passar mais de 50 dias</p>
+    <button onclick="document.getElementById('menu-inicial').style.display='none'">INICIAR JOGO</button>
+  </div>
+
+  <div id="tela-vitoria"
+    style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,100,0,0.9); z-index:1000; align-items:center; justify-content:center; flex-direction:column;">
+    <h1 style="color:white; font-size:50px;">VITÓRIA!</h1>
+    <p style="color:white;">Você atingiu 10.000 moedas e salvou o Lixão!</p>
+    <button onclick="recomecar()" style="padding:10px 20px; font-size:20px; cursor:pointer;">RECOMEÇAR</button>
+  </div>
+
+  <div id="tela-derrota"
+    style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(100,0,0,0.9); z-index:1000; align-items:center; justify-content:center; flex-direction:column;">
+    <h1 style="color:white; font-size:50px;">FALÊNCIA!</h1>
+    <p style="color:white;">Seu lixão acumulou dívidas demais e foi interditado.</p>
+    <button onclick="recomecar()" style="padding:10px 20px; font-size:20px; cursor:pointer;">RECOMEÇAR</button>
+  </div>
+
+  <div id="modal-overlay">
+    <div id="modal">
+      <h2>🗑️ ECOSYS</h2>
+      <p>Bem-vindo ao EcoSys! Quebre sucata, construa robôs e cultive nas áreas limpas para sobreviver neste mundo
+        pós-apocalíptico.</p>
+      <input type="text" id="input-nome" placeholder="Seu nome, catador..." maxlength="20" />
+      <button class="btn-primary" onclick="iniciarJogo()">⚙️ COMEÇAR A CATAÇÃO</button>
+    </div>
+  </div>
+
+  <!-- HEADER -->
+
+  <!-- Modal de status do servidor (mostra quando o servidor for reiniciado) -->
+  <div id="server-msg"
+    style="display:none; position:fixed; top:16px; right:16px; background:var(--panel); border:2px solid var(--green); padding:10px 14px; border-radius:6px; z-index:1100; font-family: 'Share Tech Mono', monospace;">
+    <span id="server-msg-text" style="color:var(--white);"></span>
+    <button id="server-msg-close" onclick="document.getElementById('server-msg').style.display='none'"
+      style="margin-left:10px; background:none; border:1px solid var(--border); color:var(--white); padding:4px; cursor:pointer;">Fechar</button>
+  </div>
+
+  <div id="header">
+    <div id="titulo">🗑️ <span>ECO</span>SYS</div>
+    <div id="status-bar">
+      <div class="stat">
+        <span class="stat-icon">👤</span>
+        <span id="hud-nome">-</span>
+      </div>
+      <div class="stat">
+        <span class="stat-icon">⭐</span>
+        <span id="hud-nivel">Nv.1</span>
+      </div>
+      <div class="stat">
+        <span class="stat-icon">☀️</span>
+        <span id="hud-dia">Dia 1</span>
+      </div>
+      <div class="stat">
+        <span class="stat-icon">⚡</span>
+        <div class="bar-wrap">
+          <div class="bar-fill bar-energia" id="bar-energia" style="width:100%"></div>
+        </div>
+        <span id="hud-energia">100</span>
+      </div>
+      <div class="stat">
+        <span class="stat-icon">✨</span>
+        <div class="bar-wrap">
+          <div class="bar-fill bar-xp" id="bar-xp" style="width:0%"></div>
+        </div>
+        <span id="hud-xp">0</span>
+      </div>
+      <div class="stat">
+        <span class="stat-icon">🪙</span>
+        <span id="hud-moedas">100</span>
+      </div>
+    </div>
+    <div class="stat" style="background:#222; padding:2px 8px; border-radius:4px;">
+      <button id="btn-som" onclick="toggleAudioGlobal()"
+        style="background:none; border:none; color:white; cursor:pointer; font-size:14px;">🔇 Ligar Som</button>
+      <input type="range" id="volume-slider" min="0" max="1" step="0.1" value="0.2" style="width:60px;"
+        onchange="ajustarVolume(this.value)">
+    </div>
+  </div>
+
+  <!-- MAIN -->
+  <div id="main">
+
+    <!-- LEFT -->
+    <div id="left-panel">
+      <div class="panel-section">
+        <div class="panel-title">🗺️ Áreas</div>
+        <button class="area-btn active" onclick="mudarArea('lixao_central')" id="area-lixao_central">🗑️ Lixo
+          Central</button>
+        <button class="area-btn" onclick="mudarArea('ferro_velho')" id="area-ferro_velho">⚙️ Ferro-Velho</button>
+        <button class="area-btn" onclick="mudarArea('area_limpa_norte')" id="area-area_limpa_norte">🌿 Área
+          Limpa</button>
+        <button class="area-btn" onclick="mudarArea('oficina')" id="area-oficina">🔧 Oficina</button>
+      </div>
+
+      <div class="panel-section">
+        <div class="panel-title">🛠️ Ferramentas</div>
+        <button class="tool-btn selected" id="tool-picareta" onclick="selecionarFerramenta('picareta')">⛏️
+          Picareta</button>
+        <button class="tool-btn" id="tool-enxada" onclick="selecionarFerramenta('enxada')">🍀 Enxada</button>
+        <button class="tool-btn" id="tool-regador" onclick="selecionarFerramenta('regador')">💧 Regador</button>
+        <button class="tool-btn" id="tool-mao" onclick="selecionarFerramenta('mao')">✋ Mão (Colher)</button>
+        <button class="tool-btn" id="tool-vassoura" onclick="selecionarFerramenta('vassoura')">🧹 Vassoura</button>
+
+        <div style="margin-top:6px">
+          <div style="font-size:9px; color: var(--gray); margin-bottom:3px">Semente:</div>
+          <select id="semente-select">
+            <option value="semente_cogumelo_mutante">🍄 Cogumelo Mutante</option>
+            <option value="semente_batata_radioativa">🥔 Batata Radioativa</option>
+            <option value="semente_girassol_oxidado">🌻 Girassol Oxidado</option>
+            <option value="semente_fungo_ferrugem">🟤 Fungo Ferrugem</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="panel-section">
+        <div class="panel-title">📦 Inventário</div>
+        <div id="inventario-lista"></div>
+      </div>
+
+      <div class="panel-section">
+        <button id="btn-dormir" onclick="avancarDia()">🌙 Dormir (próx. dia)</button>
+        <button class="tool-btn" style="margin-top:4px" onclick="toggleCraft()">🤖 Construir Robô</button>
+      </div>
+    </div>
+
+    <!-- GAME -->
+    <div id="game-area">
+      <canvas id="game-canvas"></canvas>
+      <div id="tooltip"></div>
+      <div id="craft-modal">
+        <h3>⚙️ CONSTRUIR ROBÔ</h3>
+        <div id="craft-lista"></div>
+        <button class="tool-btn" style="margin-top:4px; font-size:10px" onclick="toggleCraft()">✕ Fechar</button>
+      </div>
+    </div>
+
+    <!-- RIGHT -->
+    <div id="right-panel">
+      <div class="panel-section">
+        <div class="panel-title">🤖 Seus Robôs</div>
+        <div id="robos-lista">
+          <div style="font-size:10px; color: var(--gray)">Nenhum robô ainda.<br>Construa na oficina!</div>
+        </div>
+      </div>
+      <div class="panel-section">
+        <div class="panel-title">📖 Guia Rápido</div>
+        <div style="font-size:9px; color: var(--gray); line-height:1.6">
+          ⛏️ Picareta: Quebra sucata<br>
+          🧹 Vassoura: Limpa lixo<br>
+          🍀 Enxada: Ara terra limpa<br>
+          💧 Regador: Rega plantas<br>
+          ✋ Mão: Colhe plantas<br><br>
+          <span style="color:var(--blue)">Áreas limpas:</span><br>
+          Sem spawn de lixo.<br>
+          Use para cultivar!
+        </div>
+      </div>
+
+      <div id="inventario-lista-direita" style="max-height: 150px; overflow-y: auto; padding-right: 5px;"></div>
+
+      <button onclick="toggleLoja()"
+        style="background:var(--yellow); color:black; font-weight:bold; padding:8px; margin:5px; border:none; cursor:pointer;">🎛️
+        Abrir Loja</button>
+    </div>
+
+
+  </div>
+
+  <div id="loja-modal" class="modal"
+    style="display:none; position:fixed; top:50%; left:50%; transform:translate(-50%,-50%); background:var(--panel); border:3px solid var(--border); padding:20px; z-index:100; max-width:400px; width:90%;">
+    <div style="display:flex; justify-content:space-between; margin-bottom:15px;">
+      <h2 style="color:var(--yellow); font-family:'Orbitron';">🎛️ Mercado Do EcoSys</h2>
+      <button onclick="toggleLoja()"
+        style="background:var(--red); color:white; border:none; padding:5px 10px; cursor:pointer;">X</button>
+    </div>
+    <p style="font-size:12px; color:var(--gray); margin-bottom:10px;">Os preços mudam toda vez que você dorme!</p>
+    <div id="loja-lista" style="display:flex; flex-direction:column; gap:8px; max-height:300px; overflow-y:auto;">
+    </div>
+  </div>
+
+  <!-- LOG -->
+  <div id="log-area">
+    <div class="log-msg info">▶ Bem-vindo ao EcoSys! Clique nos tiles para interagir.</div>
+  </div>
+
+  <script>
+    const API = 'http://localhost:8765/api';
+    let jogadorId = null;
+    let estado = null;
+    let ferramentaAtual = 'picareta';
+    let camOffset = { x: 0, y: 0 };
+    let isDragging = false;
+    let dragStart = { x: 0, y: 0 };
+    let TILE = 40;
+
+    const canvas = document.getElementById('game-canvas');
+    const ctx = canvas.getContext('2d');
+    let animFrame = 0;
+    let particulas = [];
+    let flashTiles = {};
+
+    // TILES config
+    const TILES_CONFIG = {
+      'lixo': { bg: '#1a1610', fg: '#6a5030', char: '🗑️', label: 'Lixo' },
+      'lixo_pesado': { bg: '#1a1208', fg: '#8a6020', char: '📦', label: 'Lixo Pesado' },
+      'sucata_ferro': { bg: '#1a1208', fg: '#c07020', char: '🔩', label: 'Sucata de Ferro', item: true },
+      'sucata_ferro_pesada': { bg: '#120e06', fg: '#d08030', char: '⚙️', label: 'Ferro Pesado', item: true },
+      'sucata_plastico': { bg: '#0e1018', fg: '#6080c0', char: '🥤', label: 'Plástico', item: true },
+      'sucata_eletronico': { bg: '#0a1018', fg: '#40d080', char: '📟', label: 'Eletrônico', item: true },
+      'sucata_rara': { bg: '#0a0818', fg: '#d040ff', char: '💎', label: 'Sucata Rara', item: true },
+      'obstaculo': { bg: '#111008', fg: '#3a3020', char: '🚧', label: 'Obstáculo' },
+      'terra_limpa': { bg: '#121a0a', fg: '#4a8a30', char: '🟫', label: 'Terra Limpa' },
+      'terra_arada': { bg: '#0e1208', fg: '#6a5030', char: '🟫', label: 'Terra Arada' },
+      'terra_plantada': { bg: '#0a1008', fg: '#3a7020', char: '🌱', label: 'Terra Plantada' },
+      'concreto': { bg: '#141414', fg: '#404040', char: '⬛', label: 'Concreto' },
+      'bancada_trabalho': { bg: '#1a1208', fg: '#d08010', char: '⚒️', label: 'Bancada de Trabalho' },
+      'semente_cogumelo_mutante': { bg: '#1a1208', fg: '#ff66ff', char: '🍄', label: 'Sem. Cogumelo' },
+      'semente_batata_radioativa': { bg: '#1a1208', fg: '#ffff66', char: '🥔', label: 'Sem. Batata' },
+      'semente_girassol_oxidado': { bg: '#1a1208', fg: '#ffaa00', char: '🌻', label: 'Sem. Girassol' },
+      'semente_fungo_ferrugem': { bg: '#1a1208', fg: '#886644', char: '🟤', label: 'Sem. Fungo' },
+    };
+
+    const AREAS_INFO = {
+      'lixao_central': { nome: 'Lixão Central', desc: 'Área principal de catação', cor: '#3a2a10' },
+      'area_limpa_norte': { nome: 'Área Limpa Norte', desc: 'Cultivar aqui! Sem lixo.', cor: '#1a2a10' },
+      'ferro_velho': { nome: 'Ferro-Velho', desc: 'Sucata pesada e rara', cor: '#2a1a08' },
+      'oficina': { nome: 'Oficina', desc: 'Construir robôs', cor: '#101018' },
+    };
+
+    const ITENS_NOME = {
+      'sucata_ferro': '🔩 Ferro',
+      'sucata_plastico': '🥤 Plástico',
+      'sucata_eletronico': '📟 Eletrônico',
+      'sucata_rara': '💎 Rara',
+      'cogumelo_mutante': '🍄 Cogumelo',
+      'batata_radioativa': '🥔 Batata',
+      'girassol_oxidado': '🌻 Girassol',
+      'fungo_ferrugem': '🟤 Fungo',
+      'semente_cogumelo_mutante': '🍄 Semente de Cogumelo',
+      'semente_batata_radioativa': '🥔 Semente de Batata',
+      'semente_girassol_oxidado': '🌻 Semente de Girassol',
+      'semente_fungo_ferrugem': '🟤 Semente de Fungo',
+    };
+
+    function resize() {
+      const area = document.getElementById('game-area');
+      canvas.width = area.clientWidth;
+      canvas.height = area.clientHeight;
+    }
+    window.addEventListener('resize', () => { resize(); render(); });
+    resize();
+
+    // INPUT
+    document.getElementById('input-nome').addEventListener('keydown', e => {
+      if (e.key === 'Enter') iniciarJogo();
+    });
+
+    async function iniciarJogo() {
+      const nome = document.getElementById('input-nome').value.trim() || 'Catador';
+      try {
+        const res = await fetch(`${API}/novo_jogo`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ nome })
+        });
+        const data = await res.json();
+        jogadorId = data.jogador_id;
+        document.getElementById('modal-overlay').style.display = 'none';
+        await carregarEstado();
+        loop();
+        log(`⚙️ Bem-vindo, ${nome}! Comece quebrando sucata com a picareta.`, 'info');
+      } catch (e) {
+        log('❌ Servidor não encontrado! Inicie server.py primeiro.', 'erro');
+      }
+    }
+
+    async function carregarEstado() {
+      if (!jogadorId) return;
+      try {
+        const res = await fetch(`${API}/estado?jogador_id=${jogadorId}`);
+        estado = await res.json();
+        atualizarHUD();
+        atualizarInventario();
+        atualizarRobos();
+      } catch (e) { }
+    }
+
+    async function executarAcao(acao, params) {
+      if (!jogadorId) return null;
+      try {
+        const res = await fetch(`${API}/acao`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ jogador_id: jogadorId, acao, params })
+        });
+        const data = await res.json();
+        if (data.sucesso) {
+          log(`✅ ${data.mensagem}`, data.xp > 0 ? 'xp' : '');
+        } else {
+          log(`⚠️ ${data.mensagem}`, 'erro');
+        }
+        await carregarEstado();
+        return data;
+      } catch (e) {
+        log('❌ Erro de conexão!', 'erro');
+        return null;
+      }
+    }
+
+    function atualizarHUD() {
+      if (!estado) return;
+      const j = estado.jogador;
+      document.getElementById('hud-nome').textContent = j.nome;
+      document.getElementById('hud-nivel').textContent = `Nv.${j.nivel}`;
+      document.getElementById('hud-dia').textContent = `Dia ${j.dia}`;
+      document.getElementById('hud-energia').textContent = `${j.energia}/${j.energia_max}`;
+      document.getElementById('hud-xp').textContent = `${j.xp}`;
+      document.getElementById('hud-moedas').textContent = j.moedas;
+
+      const pct = (j.energia / j.energia_max) * 100;
+      document.getElementById('bar-energia').style.width = pct + '%';
+
+      const xpMax = j.nivel * 100;
+      document.getElementById('bar-xp').style.width = Math.min(100, (j.xp / xpMax) * 100) + '%';
+
+      document.querySelectorAll('.area-btn').forEach(b => b.classList.remove('active'));
+      const aBtn = document.getElementById(`area-${j.area_atual}`);
+      if (aBtn) aBtn.classList.add('active');
+    }
+
+    function atualizarInventario() {
+      if (!estado || !estado.inventario) return;
+      const lista = document.getElementById('inventario-lista');
+
+      // Convertendo o inventário para array caso ele venha como objeto
+      const invArray = Array.isArray(estado.inventario)
+        ? estado.inventario
+        : Object.entries(estado.inventario).map(([id, qtd]) => ({ item_id: id, quantidade: qtd }));
+
+      // Filtro seguro: só esconde se for estritamente uma ferramenta
+      const itensParaMostrar = invArray.filter(item => {
+        const id = item.item_id || "";
+        return !id.startsWith('ferramenta_');
+      });
+
+      if (itensParaMostrar.length === 0) {
+        lista.innerHTML = '<div style="padding:10px; color:#666;">Inventário vazio</div>';
+        return;
+      }
+
+      lista.innerHTML = itensParaMostrar.map(item => {
+        const id = item.item_id;
+        const nome = ITENS_NOME[id] || id; // Usa o nome ou o próprio ID caso não ache no dicionário
+        return `
+      <div style="display:flex; justify-content:space-between; padding:4px; border-bottom:1px solid #222;">
+        <span>${nome}</span>
+        <span style="color:var(--yellow)">${item.quantidade}</span>
+      </div>`;
+      }).join('');
+    }
+
+    function atualizarRobos() {
+      if (!estado) return;
+      const lista = document.getElementById('robos-lista');
+      if (!estado.robos.length) {
+        lista.innerHTML = '<div style="font-size:10px; color: var(--gray)">Nenhum robô ainda.<br>Construa na oficina!</div>';
+        return;
+      }
+
+      const tipoNome = {
+        'robo_coletor': '🤖 Coletor',
+        'robo_agricultor': '🌾 Agricultor',
+        'robo_minerador': '⛏ Minerador',
+        'robo_limpador': '🧹 Limpador',
+      };
+
+      lista.innerHTML = estado.robos.map(r => `
+    <div class="robo-card">
+      <div class="robo-nome">${r.nome}</div>
+      <div class="robo-tipo">${tipoNome[r.tipo] || r.tipo} Nv.${r.nivel}</div>
+    </div>
+  `).join('');
+    }
+
+    function selecionarFerramenta(ferr) {
+      ferramentaAtual = ferr;
+      document.querySelectorAll('.tool-btn').forEach(b => b.classList.remove('selected'));
+      const btn = document.getElementById(`tool-${ferr}`);
+      if (btn) btn.classList.add('selected');
+      log(`🛠️ Ferramenta: ${ferr}`, 'info');
+    }
+
+    async function mudarArea(area) {
+      await executarAcao('mover_area', { area });
+      render();
+    }
+
+    async function avancarDia() {
+      await executarAcao('avancar_dia', {});
+      render();
+    }
+
+    function getTileAt(x, y) {
+      if (!estado) return null;
+      return estado.tiles.find(t => t.x === x && t.y === y);
+    }
+
+    function getCultivoAt(x, y) {
+      if (!estado) return null;
+      return estado.cultivos.find(c => c.x === x && c.y === y);
+    }
+
+    // CANVAS INTERACTION
+    canvas.addEventListener('click', async (e) => {
+      if (!estado) return;
+      const rect = canvas.getBoundingClientRect();
+      const cx = e.clientX - rect.left - camOffset.x;
+      const cy = e.clientY - rect.top - camOffset.y;
+      const tx = Math.floor(cx / TILE);
+      const ty = Math.floor(cy / TILE);
+
+      const tile = getTileAt(tx, ty);
+      if (!tile) return;
+
+      let resultado = null;
+
+      if (ferramentaAtual === 'picareta') {
+        resultado = await executarAcao('quebrar_sucata', { x: tx, y: ty });
+        if (resultado?.sucesso) addParticula(tx, ty, '#c07020');
+      } else if (ferramentaAtual === 'enxada') {
+        resultado = await executarAcao('limpar_area', { x: tx, y: ty });
+        if (resultado?.sucesso) addParticula(tx, ty, '#4a8a30');
+      } else if (ferramentaAtual === 'regador') {
+        resultado = await executarAcao('regar', { x: tx, y: ty });
+        if (resultado?.sucesso) addParticula(tx, ty, '#4488cc');
+      } else if (ferramentaAtual === 'mao') {
+        resultado = await executarAcao('colher', { x: tx, y: ty });
+        if (resultado?.sucesso) addParticula(tx, ty, '#44cc44');
+      } else if (ferramentaAtual === 'vassoura') {
+        resultado = await executarAcao('limpar_area', { x: tx, y: ty });
+        if (resultado?.sucesso) addParticula(tx, ty, '#aa8833');
+      }
+
+      // Plantar com enxada em terra arada - oferecer opção
+      if (ferramentaAtual === 'enxada' && tile.tipo === 'terra_arada') {
+        const semente = document.getElementById('semente-select').value;
+        resultado = await executarAcao('cultivar', { x: tx, y: ty, semente });
+        if (resultado?.sucesso) addParticula(tx, ty, '#228822');
+      }
+
+      if (resultado?.sucesso) {
+        flashTiles[`${tx},${ty}`] = 8;
+      }
+
+      render();
+    });
+
+    // Drag para mover câmera
+    canvas.addEventListener('mousedown', e => {
+      if (e.button === 2) { // botão direito
+        isDragging = true;
+        dragStart = { x: e.clientX - camOffset.x, y: e.clientY - camOffset.y };
+      }
+    });
+    canvas.addEventListener('mousemove', e => {
+      if (isDragging) {
+        camOffset.x = e.clientX - dragStart.x;
+        camOffset.y = e.clientY - dragStart.y;
+        render();
+      }
+
+      // Tooltip
+      if (!estado) return;
+      const rect = canvas.getBoundingClientRect();
+      const cx = e.clientX - rect.left - camOffset.x;
+      const cy = e.clientY - rect.top - camOffset.y;
+      const tx = Math.floor(cx / TILE);
+      const ty = Math.floor(cy / TILE);
+      const tile = getTileAt(tx, ty);
+      const cultivo = getCultivoAt(tx, ty);
+
+      const tip = document.getElementById('tooltip');
+      if (tile) {
+        const cfg = TILES_CONFIG[tile.tipo] || { label: tile.tipo };
+        let txt = cfg.label;
+        if (tile.quantidade > 0) txt += ` (${tile.quantidade})`;
+        if (cultivo) txt += `\n🌱 ${cultivo.planta_id} [${cultivo.estagio}/${cultivo.estagio_max}]${cultivo.regado ? ' 💧' : ''}`;
+        tip.style.display = 'block';
+        tip.style.left = (e.clientX - rect.left + 10) + 'px';
+        tip.style.top = (e.clientY - rect.top + 10) + 'px';
+        tip.textContent = txt;
+      } else {
+        tip.style.display = 'none';
+      }
+    });
+    canvas.addEventListener('mouseup', () => isDragging = false);
+    canvas.addEventListener('contextmenu', e => e.preventDefault());
+    canvas.addEventListener('wheel', e => {
+      e.preventDefault();
+      const oldTile = TILE;
+      TILE = Math.max(24, Math.min(64, TILE - Math.sign(e.deltaY) * 4));
+      render();
+    });
+
+    function addParticula(tx, ty, cor) {
+      for (let i = 0; i < 6; i++) {
+        particulas.push({
+          x: tx * TILE + TILE / 2 + camOffset.x,
+          y: ty * TILE + TILE / 2 + camOffset.y,
+          vx: (Math.random() - 0.5) * 4,
+          vy: (Math.random() - 2) * 3,
+          vida: 1,
+          cor,
+          r: Math.random() * 3 + 1,
+        });
+      }
+
+    }
+
+    // RENDER
+    function render() {
+      if (!estado) return;
+      const w = canvas.width, h = canvas.height;
+      ctx.clearRect(0, 0, w, h);
+
+      const areaInfo = AREAS_INFO[estado.jogador.area_atual] || {};
+      ctx.fillStyle = areaInfo.cor || '#0a0a08';
+      ctx.fillRect(0, 0, w, h);
+
+      // Grid
+      const tiles = estado.tiles;
+      tiles.forEach(tile => {
+        const px = tile.x * TILE + camOffset.x;
+        const py = tile.y * TILE + camOffset.y;
+
+        if (px < -TILE || py < -TILE || px > w + TILE || py > h + TILE) return;
+
+        const cfg = TILES_CONFIG[tile.tipo] || { bg: '#111', fg: '#333', char: '?' };
+
+        // Flash
+        const flashKey = `${tile.x},${tile.y}`;
+        let flashAlpha = 0;
+        if (flashTiles[flashKey]) {
+          flashAlpha = flashTiles[flashKey] / 8;
+          flashTiles[flashKey]--;
+          if (flashTiles[flashKey] <= 0) delete flashTiles[flashKey];
+        }
+
+        ctx.fillStyle = cfg.bg;
+        ctx.fillRect(px, py, TILE - 1, TILE - 1);
+
+        if (flashAlpha > 0) {
+          ctx.fillStyle = `rgba(255,220,100,${flashAlpha * 0.3})`;
+          ctx.fillRect(px, py, TILE - 1, TILE - 1);
+        }
+
+        // Tile char
+        ctx.fillStyle = cfg.fg;
+        ctx.font = `${Math.floor(TILE * 0.5)}px Share Tech Mono`;
+        ctx.textAlign = 'center';
+        ctx.textBaseline = 'middle';
+        ctx.fillText(cfg.char, px + TILE / 2, py + TILE / 2);
+
+        // Quantidade
+        if (tile.quantidade > 0 && TILE >= 32) {
+          ctx.fillStyle = '#ffffff88';
+          ctx.font = `${Math.floor(TILE * 0.22)}px Share Tech Mono`;
+          ctx.fillText(`×${tile.quantidade}`, px + TILE - 2, py + TILE - 2);
+        }
+
+        // Borda hover seria aqui
+      });
+
+      // Cultivos
+      if (estado.cultivos) {
+        estado.cultivos.forEach(cv => {
+          const px = cv.x * TILE + camOffset.x;
+          const py = cv.y * TILE + camOffset.y;
+          const pct = cv.estagio / cv.estagio_max;
+
+          const chars = ['·', '♦', '♣', '✿', '❀'];
+          const charIdx = Math.min(cv.estagio, chars.length - 1);
+
+          const r = Math.floor(255 * (1 - pct));
+          const g = Math.floor(150 + 105 * pct);
+          ctx.fillStyle = `rgb(${r},${g},60)`;
+          ctx.font = `${Math.floor(TILE * 0.55)}px Share Tech Mono`;
+          ctx.textAlign = 'center';
+          ctx.textBaseline = 'middle';
+          ctx.fillText(chars[charIdx], px + TILE / 2, py + TILE / 2);
+
+          if (cv.regado) {
+            ctx.fillStyle = '#4488cc88';
+            ctx.font = `${Math.floor(TILE * 0.25)}px Share Tech Mono`;
+            ctx.fillText('💧', px + 2, py + 2);
+          }
+
+          // Progresso
+          if (TILE >= 36) {
+            ctx.fillStyle = '#00000088';
+            ctx.fillRect(px + 2, py + TILE - 7, TILE - 5, 4);
+            ctx.fillStyle = pct >= 1 ? '#44ff44' : '#44aa44';
+            ctx.fillRect(px + 2, py + TILE - 7, (TILE - 5) * pct, 4);
+          }
+        });
+      }
+
+      // Partículas
+      ctx.save();
+      particulas = particulas.filter(p => p.vida > 0);
+      particulas.forEach(p => {
+        ctx.globalAlpha = p.vida;
+        ctx.fillStyle = p.cor;
+        ctx.beginPath();
+        ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
+        ctx.fill();
+        p.x += p.vx; p.y += p.vy; p.vy += 0.15; p.vida -= 0.07;
+      });
+      ctx.restore();
+
+      // Área info
+      if (areaInfo.nome) {
+        ctx.fillStyle = 'rgba(0,0,0,0.5)';
+        ctx.fillRect(6, 6, 160, 32);
+        ctx.fillStyle = '#aaccaa';
+        ctx.font = '12px Orbitron, monospace';
+        ctx.textAlign = 'left';
+        ctx.textBaseline = 'top';
+        ctx.fillText(areaInfo.nome, 12, 10);
+        ctx.fillStyle = '#556655';
+        ctx.font = '10px Share Tech Mono';
+        ctx.fillText(areaInfo.desc, 12, 24);
+      }
+
+      if (estado.robos) {
+        estado.robos.forEach(robo => {
+          if (robo.area === estado.jogador.area_atual) {
+            const rx = robo.pos_x * TILE + camOffset.x;
+            const ry = robo.pos_y * TILE + camOffset.y;
+
+            ctx.fillStyle = 'rgba(72, 170, 204, 0.4)';
+            ctx.fillRect(rx + 2, ry + 2, TILE - 4, TILE - 4);
+
+            ctx.font = `${Math.floor(TILE * 0.7)}px Arial`;
+            ctx.textAlign = 'center';
+            ctx.textBaseline = 'middle';
+            ctx.fillText('🤖', rx + TILE / 2, ry + TILE / 2);
+
+            if (robo.tarefa !== 'idle' && TILE >= 32) {
+              ctx.fillStyle = '#5aff4a';
+              ctx.font = '12px Orbitron';
+              const flutuar = Math.sin(animFrame / 10) * 3;
+              ctx.fillText('⚡', rx + TILE / 2, ry - 10 + flutuar);
+            }
+          }
+        });
+      }
+
+      function checarCondicoesJogo() {
+        if (!estado || !estado.jogador) return;
+
+        // Condição de Vitória: 10.000 moedas
+        if (estado.jogador.moedas >= 10000) {
+          console.log("Vitória atingida!"); // Se aparecer isso no console, a lógica está certa
+          document.getElementById('tela-vitoria').style.display = 'flex';
+          window.requestAnimationFrame(() => { }); // Congela a animação para destacar a tela de vitória
+        }
+
+        // Condição de Derrota: 0 moedas E sem energia (Exaustão total)!
+        const diaAtual = Number(estado.jogador.dia || 0);
+        if (diaAtual >= 50) {
+          document.getElementById('tela-derrota').style.display = 'flex';
+        }
+      }
+
+      checarCondicoesJogo();
+      animFrame++;
+      requestAnimationFrame(render);
+
+    }
+
+    function loop() {
+      render();
+      if (particulas.length > 0 || Object.keys(flashTiles).length > 0) {
+        requestAnimationFrame(loop);
+      } else {
+        setTimeout(loop, 200);
+      }
+    }
+
+    function log(msg, tipo = '') {
+      const area = document.getElementById('log-area');
+      const div = document.createElement('div');
+      div.className = `log-msg ${tipo}`;
+      div.textContent = msg;
+      area.appendChild(div);
+      while (area.children.length > 30) area.removeChild(area.firstChild);
+      area.scrollTop = area.scrollHeight;
+    }
+
+
+    // ============================================================================
+    // SISTEMA DE SOM REFORMULADO (Com ativação segura por clique do usuário)
+    // ============================================================================
+    const AudioFX = {
+      ctx: null,
+
+      // Essa função garante que o som seja liberado após o usuário interagir com a tela
+      init() {
+        if (!this.ctx) {
+          this.ctx = new (window.AudioContext || window.webkitAudioContext)();
+        }
+        // Se o navegador colocou o som em modo suspenso, nós forçamos a ativação
+        if (this.ctx.state === 'suspended') {
+          this.ctx.resume();
+        }
+      },
+
+      play(tipo) {
+        this.init(); // Ativa e checa o estado do áudio com segurança
+        if (!this.ctx || this.ctx.state === 'suspended') return;
+
+        const osc = this.ctx.createOscillator();
+        const gain = this.ctx.createGain();
+        osc.connect(gain);
+        gain.connect(this.ctx.destination);
+
+        const agora = this.ctx.currentTime;
+
+        switch (tipo) {
+          case 'quebrar': // Impacto agudo de picareta na pedra/metal
+            osc.type = 'triangle';
+            osc.frequency.setValueAtTime(220, agora);
+            osc.frequency.exponentialRampToValueAtTime(60, agora + 0.12);
+            gain.gain.setValueAtTime(0.4, agora);
+            gain.gain.exponentialRampToValueAtTime(0.01, agora + 0.12);
+            osc.start(agora);
+            osc.stop(agora + 0.12);
+            break;
+          case 'plantar': // Som descendente suave
+            osc.type = 'sine';
+            osc.frequency.setValueAtTime(350, agora);
+            osc.frequency.linearRampToValueAtTime(150, agora + 0.15);
+            gain.gain.setValueAtTime(0.3, agora);
+            gain.gain.exponentialRampToValueAtTime(0.01, agora + 0.15);
+            osc.start(agora);
+            osc.stop(agora + 0.15);
+            break;
+          case 'regar': // Efeito de ruído ou jato curto de água
+            osc.type = 'sine';
+            osc.frequency.setValueAtTime(500, agora);
+            osc.frequency.linearRampToValueAtTime(300, agora + 0.25);
+            gain.gain.setValueAtTime(0.25, agora);
+            gain.gain.exponentialRampToValueAtTime(0.01, agora + 0.25);
+            osc.start(agora);
+            osc.stop(agora + 0.25);
+            break;
+          case 'vassoura': // Raspar curto
+            osc.type = 'triangle';
+            osc.frequency.setValueAtTime(130, agora);
+            osc.frequency.linearRampToValueAtTime(180, agora + 0.08);
+            gain.gain.setValueAtTime(0.2, agora);
+            gain.gain.exponentialRampToValueAtTime(0.01, agora + 0.08);
+            osc.start(agora);
+            osc.stop(agora + 0.08);
+            break;
+          case 'colher': // Bipe de conquista em alta frequência
+            osc.type = 'square';
+            osc.frequency.setValueAtTime(523, agora); // Nota Dó
+            osc.frequency.setValueAtTime(659, agora + 0.07); // Nota Mi
+            gain.gain.setValueAtTime(0.15, agora);
+            gain.gain.exponentialRampToValueAtTime(0.01, agora + 0.2);
+            osc.start(agora);
+            osc.stop(agora + 0.2);
+            break;
+          case 'robo_trabalhando': // Som sintetizado "bzz-tack" de circuito operando
+            osc.type = 'sawtooth';
+            osc.frequency.setValueAtTime(100, agora);
+            osc.frequency.linearRampToValueAtTime(400, agora + 0.1);
+            osc.frequency.setValueAtTime(200, agora + 0.1);
+            gain.gain.setValueAtTime(0.15, agora);
+            gain.gain.exponentialRampToValueAtTime(0.01, agora + 0.3);
+            osc.start(agora);
+            osc.stop(agora + 0.3);
+            break;
+        }
+      }
+    };
+
+    // ============================================================================
+    // MODIFICAÇÃO DO DESENHO DO CANVAS (Mostra Ícones e Trabalho dos Robôs)
+    // ============================================================================
+    function desenharMapa() {
+      if (!estado) return;
+
+      const w = canvas.width;
+      const h = canvas.height;
+      ctx.clearRect(0, 0, w, h);
+
+      // 1. Desenha os blocos normais e itens do cenário
+      estado.tiles.forEach(tile => {
+        const px = tile.x * TILE + camOffset.x;
+        const py = tile.y * TILE + camOffset.y;
+        if (px < -TILE || py < -TILE || px > w + TILE || py > h + TILE) return;
+
+        const cfg = TILES_CONFIG[tile.tipo] || { bg: '#111', fg: '#333', char: '?' };
+
+        // Fundo do bloco
+        ctx.fillStyle = cfg.bg;
+        ctx.fillRect(px, py, TILE - 1, TILE - 1);
+
+        // Se tiver planta ou material nativo, desenha o caractere/emoji correspondente
+        if (cfg.char) {
+          ctx.fillStyle = cfg.fg;
+          ctx.font = "16px 'Share Tech Mono', monospace";
+          ctx.textAlign = "center";
+          ctx.textBaseline = "middle";
+          ctx.fillText(cfg.char, px + TILE / 2, py + TILE / 2);
+        }
+      });
+
+      // 2. SISTEMA VISUAL: Desenha e renderiza os Robôs trabalhando em tempo real!
+      if (estado.robos && estado.robos.length > 0) {
+        estado.robos.forEach(robo => {
+          // O robô só aparece visualmente se estiver na mesma área que o jogador está vendo
+          if (robo.area === estado.jogador.area_atual) {
+            const rx = robo.pos_x * TILE + camOffset.x;
+            const ry = robo.pos_y * TILE + camOffset.y;
+
+            // Define o ícone de acordo com a função do robô
+            let iconeRobo = "🤖";
+            if (robo.tipo === "robo_coletor") iconeRobo = "🤖⛏️";
+            if (robo.tipo === "robo_agricultor") iconeRobo = "🤖🌾";
+            if (robo.tipo === "robo_minerador") iconeRobo = "🤖⚙️";
+            if (robo.tipo === "robo_limpador") iconeRobo = "🤖🧹";
+
+            // Desenha uma aura azul ao redor do robô para destacá-lo da sucata comum
+            ctx.fillStyle = "rgba(72, 170, 204, 0.15)";
+            ctx.beginPath();
+            ctx.arc(rx + TILE / 2, ry + TILE / 2, TILE / 2 - 2, 0, Math.PI * 2);
+            ctx.fill();
+
+            // Escreve o ícone do robô centralizado no bloco
+            ctx.font = "14px Arial";
+            ctx.textAlign = "center";
+            ctx.textBaseline = "middle";
+            ctx.fillText(iconeRobo, rx + TILE / 2, ry + TILE / 2);
+
+            // Se o robô não estiver parado ('idle'), exibe um balãozinho indicando ação ("TRABALHANDO" ou "COLHENDO")
+            if (robo.tarefa && robo.tarefa !== 'idle') {
+              ctx.fillStyle = "var(--green)";
+              ctx.font = "bold 8px 'Orbitron', sans-serif";
+              ctx.textAlign = "center";
+
+              let textoAcao = "⚡ OPERANDO";
+              if (robo.tarefa === 'coletando' || robo.tarefa === 'colhendo') {
+                textoAcao = "📦 COLHENDO";
+              }
+
+              // Efeito de flutuação leve no texto usando o tempo atual da animação
+              const flutuar = Math.sin(Date.now() / 150) * 2;
+              ctx.fillText(textoAcao, rx + TILE / 2, ry - 6 + flutuar);
+            }
+          }
+        });
+      }
+
+      // --- DESENHO DOS CULTIVOS (Barra de progresso e gota d'água) ---
+      if (estado.cultivos && estado.cultivos.length > 0) {
+        estado.cultivos.forEach(cv => {
+          // Só desenha se a planta estiver na mesma área que a câmera está olhando
+          if (cv.area === estado.jogador.area_atual) {
+            const cx = cv.x * TILE + camOffset.x;
+            const cy = cv.y * TILE + camOffset.y;
+
+            // Desenha a gotinha se estiver regada (canto superior direito)
+            if (cv.regado === 1) {
+              ctx.fillStyle = 'rgba(0, 150, 255, 0.8)'; // Fundo azulzinho
+              ctx.fillRect(cx + TILE - 14, cy + 2, 12, 12);
+              ctx.fillStyle = 'white';
+              ctx.font = '10px Arial';
+              ctx.fillText('💧', cx + TILE - 8, cy + 8);
+            }
+
+            // Calcula a porcentagem de crescimento para a barra
+            const pct = cv.estagio / cv.estagio_max;
+
+            // Fundo da barra (preto)
+            ctx.fillStyle = 'rgba(0, 0, 0, 0.7)';
+            ctx.fillRect(cx + 2, cy + TILE - 6, TILE - 4, 4);
+
+            // Preenchimento da barra (verde se pronto, amarelo se crescendo)
+            ctx.fillStyle = pct >= 1 ? '#5aff4a' : '#d4b800';
+            ctx.fillRect(cx + 2, cy + TILE - 6, (TILE - 4) * pct, 4);
+
+            // Efeito visual: se estiver no máximo, mostra o ícone da planta grande
+            if (pct >= 1) {
+              ctx.font = '18px Arial';
+              const iconePronto = NOMES_ITENS[cv.planta_id]?.charAt(0) || '🌿';
+              ctx.fillText(iconePronto, cx + TILE / 2, cy + TILE / 2);
+            }
+          }
+        });
+      }
+    }
+
+    function iniciarJogo() {
+      const nomeInput = document.getElementById('input-nome').value.trim();
+      const nome = nomeInput || "Catador";
+
+      // SOLUÇÃO DO SOM: Ativa no clique exato do usuário
+      if (typeof AudioFX !== 'undefined') {
+        AudioFX.init();
+      }
+
+      fetch(`${API}/novo_jogo`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ nome: nome })
+      })
+        .then(res => res.json())
+        .then(data => {
+          if (data.sucesso) {
+            jogadorId = data.jogador_id;
+            document.getElementById('modal-overlay').style.display = 'none';
+            carregarEstado().then(() => {
+              function loop() { desenharMapa(); requestAnimationFrame(loop); }
+              requestAnimationFrame(loop);
+            });
+          }
+        });
+    }
+
+
+
+    // Nomes amigáveis e ícones para exibição no inventário e mercado
+    const NOMES_ITENS = {
+      'sucata_ferro': '🔩 Sucata de Ferro',
+      'sucata_plastico': '🥤 Sucata de Plástico',
+      'sucata_eletronico': '📟 Componente Eletrônico',
+      'sucata_rara': '💎 Relíquia Rara',
+      'cogumelo_mutante': '🍄 Cogumelo Mutante',
+      'batata_radioativa': '🥔 Batata Radioativa',
+      'girassol_oxidado': '🌻 Girassol Oxidado',
+      'fungo_ferrugem': '🟤 Fungo Ferrugem',
+      'semente_cogumelo_mutante': '🍄 Semente de Cogumelo',
+      'semente_batata_radioativa': '🥔 Semente de Batata',
+      'semente_girassol_oxidado': '🌻 Semente de Girassol',
+      'semente_fungo_ferrugem': '🟤 Semente de Fungo',
+
+    };
+
+    function toggleLoja() {
+      const modal = document.getElementById('loja-modal');
+      if (modal.style.display === 'block') {
+        modal.style.display = 'none';
+        return;
+      }
+
+      renderizarLoja();
+      modal.style.display = 'block';
+    }
+    function renderizarLoja() {
+      const lista = document.getElementById('loja-lista');
+      if (!estado) return;
+
+      // 1. SEÇÃO DE COMPRA (Mostra o que está disponível no mercado)
+      let htmlLoja = `<h3 style="color:var(--blue); margin-top:10px; font-size:12px;">🛒 COMPRAR (Preço +50%)</h3>`;
+
+      // Mapeia os itens do mercado flutuante + Sementes
+      const itensParaComprar = Object.keys(estado.precos_loja || {});
+      ['semente_cogumelo_mutante', 'semente_batata_radioativa', 'semente_girassol_oxidado'].forEach(s => {
+        if (!itensParaComprar.includes(s)) itensParaComprar.push(s);
+      });
+
+      itensParaComprar.forEach(itemId => {
+        const nomeItem = NOMES_ITENS[itemId] || itemId;
+        const precoVenda = estado.precos_loja[itemId];
+        // Preço de compra é 50% maior (ou fixo se for semente)
+        const precoCompra = precoVenda ? Math.floor(precoVenda * 1.5) : (itemId.includes('cogumelo') ? 15 : 25);
+
+        htmlLoja += `
+      <div style="display:flex; justify-content:space-between; align-items:center; background:var(--panel2); padding:6px; border:1px solid var(--blue); margin-bottom:4px;">
+        <div style="font-size:11px;">${nomeItem} <br><span style="color:var(--yellow)">Custa: 🪙 ${precoCompra}</span></div>
+        <button onclick="comprarItem('${itemId}')" style="background:var(--blue); color:white; border:none; padding:4px 8px; cursor:pointer; font-weight:bold;">COMPRAR</button>
+      </div>
+    `;
+      });
+
+      // 2. SEÇÃO DE VENDA (Lê o seu inventário)
+      htmlLoja += `<h3 style="color:var(--green); margin-top:15px; font-size:12px;">💰 VENDER SEUS ITENS</h3>`;
+
+      let listaItens = Array.isArray(estado.inventario) ? estado.inventario : Object.entries(estado.inventario || {}).map(([id, qtd]) => ({ item_id: id, quantidade: qtd }));
+
+      listaItens.forEach(inv => {
+        const precoDia = estado.precos_loja ? estado.precos_loja[inv.item_id] : null;
+        if (!precoDia) return; // Só mostra itens que podem ser vendidos
+
+        const nomeItem = NOMES_ITENS[inv.item_id] || inv.item_id;
+        htmlLoja += `
+      <div style="display:flex; justify-content:space-between; align-items:center; background:var(--panel2); padding:6px; border:1px solid var(--green); margin-bottom:4px;">
+        <div style="font-size:11px;">${nomeItem} (Tem: ${inv.quantidade})<br><span style="color:var(--green)">Vende por: 🪙 ${precoDia}</span></div>
+        <button onclick="venderItem('${inv.item_id}', 1)" style="background:var(--green2); color:white; border:none; padding:4px 8px; cursor:pointer; font-weight:bold;">VENDER 1</button>
+      </div>
+    `;
+      });
+
+      lista.innerHTML = htmlLoja;
+    }
+
+    async function venderItem(itemId, quantidade) {
+      const resultado = await executarAcao('vender_item', { item_id: itemId, quantidade: quantidade });
+      if (resultado?.sucesso) {
+        AudioFX.play('colher'); // Toca o barulhinho de moedas/sucesso!
+        log(resultado.mensagem, "sucesso");
+        await carregarEstado(); // Recarrega os dados do jogo
+        renderizarLoja(); // Atualiza a lista da lojinha
+      } else {
+        log(resultado?.mensagem || "Erro ao vender", "erro");
+      }
+    }
+
+    async function comprarItem(itemId) {
+      const resultado = await executarAcao('comprar_item', { item_id: itemId, quantidade: 1 });
+      if (resultado?.sucesso) {
+        if (typeof AudioFX !== 'undefined') AudioFX.play('colher');
+        log(resultado.mensagem, "sucesso");
+        await carregarEstado();
+        renderizarLoja();
+      } else {
+        log(resultado?.mensagem || "Erro ao comprar", "erro");
+      }
+    }
+
+    async function uparRobo(roboId) {
+      const resultado = await executarAcao('upar_robo', { robo_id: roboId });
+      if (resultado?.sucesso) {
+        if (typeof AudioFX !== 'undefined') AudioFX.play('robo_trabalhando');
+        log(resultado.mensagem, "sucesso");
+        await carregarEstado();
+      } else {
+        log(resultado?.mensagem || "Sem moedas para upar", "erro");
+      }
+    }
+
+    // Substitua a função atualizarRobos() por esta para adicionar o botão de UPAR:
+    function atualizarRobos() {
+      if (!estado) return;
+      const lista = document.getElementById('robos-lista');
+      if (!estado.robos || estado.robos.length === 0) {
+        lista.innerHTML = '<div style="font-size:10px; color: var(--gray)">Nenhum robô construído.</div>';
+        return;
+      }
+
+      lista.innerHTML = estado.robos.map(r => `
+    <div class="robo-card">
+      <div class="robo-nome">${r.nome} (Nv.${r.nivel})</div>
+      <div class="robo-tipo" style="font-size:9px;">${r.tipo} | Ação: ${r.tarefa}</div>
+      <button onclick="uparRobo(${r.id})" style="width:100%; margin-top:4px; font-size:9px; background:var(--panel); color:var(--yellow); border:1px solid var(--yellow); cursor:pointer;">
+        ⬆️ UPAR (Custa ${r.nivel * 150} moedas)
+      </button>
+    </div>
+  `).join('');
+    }
+
+    function formatarNomeItem(id) {
+      // Retorna o nome do dicionário ou formata o ID removendo o sublinhado
+      if (ITENS_NOME[id]) return ITENS_NOME[id];
+      return id.replace('_', ' ').toUpperCase();
+    }
+
+    function atualizarInventario() {
+      if (!estado || !estado.inventario) return;
+
+      const lista = document.getElementById('inventario-lista');
+      const inv = estado.inventario;
+
+      // Converte inventário para array de [id, qtd] de forma segura
+      const itens = Array.isArray(inv)
+        ? inv.map(i => [i.item_id, i.quantidade])
+        : Object.entries(inv);
+
+      // Filtra APENAS ferramentas, permitindo tudo o resto (sucatas, sementes, etc)
+      const itensFiltrados = itens.filter(([id, qtd]) => !id.startsWith('ferramenta_'));
+
+      if (itensFiltrados.length === 0) {
+        lista.innerHTML = '<div style="padding:10px; font-size:12px; color:#666;">Inventário vazio</div>';
+        return;
+      }
+
+      lista.innerHTML = itensFiltrados.map(([id, qtd]) => {
+        // Busca o nome no seu dicionário ITENS_NOME. Se não achar, usa o ID.
+        const nomeExibicao = (typeof ITENS_NOME !== 'undefined' && ITENS_NOME[id])
+          ? ITENS_NOME[id]
+          : id.replace(/_/g, ' ').toUpperCase();
+
+        return `
+      <div style="display:flex; justify-content:space-between; align-items:center; padding:6px; border-bottom:1px solid #2a3a2a; font-size:12px;">
+        <span style="color:#d8e0c8;">${nomeExibicao}</span>
+        <span style="color:#d4b800; font-weight:bold;">x${qtd}</span>
+      </div>`;
+      }).join('');
+    }
+
+
+    // CRAFT MODAL
+    const RECEITAS = {
+      'robo_coletor': { nome: '🤖 Robô Coletor', itens: '5× Sucata de Ferro + 3× Plástico', desc: 'Coleta sucata auto' },
+      'robo_agricultor': { nome: '🌾 Robô Agricultor', itens: '4× Sucata de Ferro + 2× Eletrônico + 1× Cogumelo', desc: 'Cuida das plantas' },
+      'robo_minerador': { nome: '⛏ Robô Minerador', itens: '8× Sucata de Ferro + 3× Eletrônico + 1× Rara', desc: 'Minera mais rápido' },
+      'robo_limpador': { nome: '🧹 Robô Limpador', itens: '6× Sucata de Ferro + 4× Plástico', desc: 'Limpa automaticamente' },
+    };
+
+    function toggleCraft() {
+      const modal = document.getElementById('craft-modal');
+      if (modal.style.display === 'block') {
+        modal.style.display = 'none';
+        return;
+      }
+
+      const lista = document.getElementById('craft-lista');
+      lista.innerHTML = Object.entries(RECEITAS).map(([tipo, info]) => `
+    <div class="craft-recipe" onclick="construirRobo('${tipo}', '${info.nome}')">
+      <div class="craft-recipe-nome">${info.nome}</div>
+      <div class="craft-recipe-itens">${info.itens}</div>
+      <div class="craft-recipe-itens" style="color:var(--green);margin-top:2px">${info.desc}</div>
+    </div>
+  `).join('');
+
+      modal.style.display = 'block';
+    }
+
+    // Atualização na função principal de cliques e ações para disparar os sons
+    async function interagirComTile(tx, ty) {
+      if (!estado) return;
+      const tile = getTileAt(tx, ty);
+      if (!tile) return;
+
+      let resultado = null;
+
+      // Executa ações baseadas na ferramenta selecionada
+      if (ferramentaAtual === 'picareta' && tile.item_id) {
+        resultado = await executarAcao('quebrar_sucata', { x: tx, y: ty });
+        if (resultado?.sucesso) AudioFX.play('quebrar');
+      }
+      else if (ferramentaAtual === 'vassoura' && (tile.tipo === 'lixo' || tile.tipo === 'lixo_pesado')) {
+        resultado = await executarAcao('limpar_area', { x: tx, y: ty });
+        if (resultado?.sucesso) AudioFX.play('vassoura');
+      }
+      else if (ferramentaAtual === 'enxada') {
+        // MELHORIA NO PLANTIO: Se o tile for terra limpa, ara. Se já for arada, planta direto com 1 clique!
+        if (tile.tipo === 'terra_limpa') {
+          resultado = await executarAcao('cultivar', { x: tx, y: ty, acao_especifica: 'arar' });
+          if (resultado?.sucesso) AudioFX.play('vassoura');
+        } else if (tile.tipo === 'terra_arada') {
+          const semente = document.getElementById('semente-select').value;
+          resultado = await executarAcao('cultivar', { x: tx, y: ty, semente, acao_especifica: 'plantar' });
+          if (resultado?.sucesso) AudioFX.play('plantar');
+        }
+      }
+      else if (ferramentaAtual === 'regador') {
+        resultado = await executarAcao('regar', { x: tx, y: ty });
+        if (resultado?.sucesso) AudioFX.play('regar');
+      }
+      else if (ferramentaAtual === 'mao') {
+        resultado = await executarAcao('colher', { x: tx, y: ty });
+        if (resultado?.sucesso) AudioFX.play('colher');
+      }
+
+      if (resultado?.sucesso) {
+        flashTiles[`${tx},${ty}`] = 8;
+        await carregarEstado();
+      }
+    }
+
+    // Quando avançar o dia, se houver robôs ativos, toca o som dos robôs operando!
+    async function avancarDia() {
+      const resultado = await executarAcao('avancar_dia', {});
+      if (resultado?.sucesso) {
+        log("🌙 Você dormiu. Os robôs trabalharam duro durante a noite!", "info");
+        if (estado?.robos?.length > 0) {
+          AudioFX.play('robo_trabalhando');
+        }
+        await carregarEstado();
+      }
+    }
+
+    async function construirRobo(tipo, nome) {
+      const nomeRobo = `Robô-${Math.floor(Math.random() * 900 + 100)}`;
+      await executarAcao('construir_robo', { tipo, nome: nomeRobo });
+      document.getElementById('craft-modal').style.display = 'none';
+    }
+
+    async function comprarItem(itemId, quantidade) {
+      const resultado = await executarAcao('comprar_item', { item_id: itemId, quantidade: quantidade });
+      if (resultado?.sucesso) {
+        if (typeof AudioFX !== 'undefined') AudioFX.play('colher');
+        log(resultado.mensagem, "sucesso");
+        await carregarEstado();
+        renderizarLoja(); // Atualiza a vitrine
+      } else {
+        log(resultado?.mensagem || "Erro ao comprar", "erro");
+      }
+    }
+
+
+    // ==========================================
+    // CONTROLADOR DE ÁUDIO GLOBAL E MÚSICA DE FUNDO
+    // ==========================================
+    let audioPermitido = false;
+    let volumeGlobal = 0.2;
+    let musicaLoop; // Vai guardar a nossa "música" de fundo procedural
+
+    function ajustarVolume(valor) {
+      volumeGlobal = parseFloat(valor);
+    }
+
+    function toggleAudioGlobal() {
+      const btn = document.getElementById('btn-som');
+
+      if (!audioPermitido) {
+        // Inicia o contexto de áudio oficialmente pelo clique!
+        AudioFX.init();
+        audioPermitido = true;
+        btn.textContent = "🔊 Som ON";
+
+        // Inicia uma musiquinha de fundo estilo 8-bits procedural (bipes graves pulsantes)
+        musicaLoop = setInterval(() => {
+          if (!audioPermitido || !AudioFX.ctx) return;
+          const osc = AudioFX.ctx.createOscillator();
+          const gain = AudioFX.ctx.createGain();
+          osc.connect(gain);
+          gain.connect(AudioFX.ctx.destination);
+
+          // Toca notas alternadas para simular um baixo de videogame
+          osc.type = 'square';
+          osc.frequency.value = (Date.now() % 2000 < 1000) ? 65.41 : 73.42; // Dó(C2) e Ré(D2)
+
+          gain.gain.setValueAtTime(volumeGlobal * 0.3, AudioFX.ctx.currentTime); // Volume da música bem baixinho
+          gain.gain.exponentialRampToValueAtTime(0.01, AudioFX.ctx.currentTime + 0.3);
+
+          osc.start();
+          osc.stop(AudioFX.ctx.currentTime + 0.3);
+        }, 500); // Bate a cada meio segundo
+
+      } else {
+        // Desliga tudo
+        audioPermitido = false;
+        btn.textContent = "🔇 Som OFF";
+        clearInterval(musicaLoop);
+        if (AudioFX.ctx) AudioFX.ctx.suspend();
+      }
+    }
+
+    async function recomecar() {
+      try {
+        const res = await fetch('/acao/resetar', { method: 'POST' });
+        if (res.ok) {
+          const data = await res.json();
+          if (data.sucesso) {
+            // Mostra mensagem no log e no modal visível
+            log('🧹 Servidor limpo e reiniciado.', 'info');
+            const msg = data.mensagem || 'Servidor limpo e reiniciado.';
+            const el = document.getElementById('server-msg');
+            document.getElementById('server-msg-text').textContent = msg;
+            el.style.display = 'block';
+          } else {
+            log(`⚠️ ${data.mensagem || 'Falha ao reiniciar o servidor.'}`, 'erro');
+          }
+        } else {
+          log('❌ Falha ao comunicar com o servidor.', 'erro');
+        }
+      } catch (e) {
+        log('❌ Erro ao reiniciar o jogo.', 'erro');
+      }
+      // Aguarda um pouco para o jogador ver a mensagem no modal
+      setTimeout(() => window.location.reload(), 1200);
+    }
+
+    // Onde você recebe os dados do servidor (provavelmente um fetch ou websocket)
+    function aoReceberDados(novoEstado) {
+      estado = novoEstado;
+      render(); // Sua função principal de desenho
+      checarCondicoesJogo(); // Adicione aqui! Isso garante a verificação imediata
+    }
+
+    // Exemplo de como deves chamar a verificação após receber o JSON do servidor:
+    function processarDados(data) {
+      estado = data;
+      render(); // Desenha o mapa
+      checarCondicoesJogo(); // <--- CHAMA AQUI SEMPRE
+    }
+
+    // Atualiza estado periodicamente
+    setInterval(() => { if (jogadorId) carregarEstado(); }, 5000);
+  </script>
+</body>
+
+</html>
